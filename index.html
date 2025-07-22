@@ -1,0 +1,175 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ronda 9º GAC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      max-width: 120px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #000428;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .light-purple {
+      background-color: #e0d5ff;
+      margin-bottom: 10px;
+    }
+
+    .qr-box {
+      background-color: #e0d5ff;
+      width: 100%;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .info-box {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #e0d5ff;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="imagens/9gac.gif" alt="Logo 9º GAC">
+    </div>
+
+    <!-- TELA 1: Login -->
+    <div id="tela1">
+      <h2>Acesse a Ronda</h2>
+      <input type="text" placeholder="Identidade" id="login">
+      <input type="password" placeholder="Senha" id="senha">
+      <button onclick="mostrarTela('tela3')">Continuar</button>
+      <button onclick="mostrarTela('tela2')">Primeiro acesso?</p>
+      <p style="text-align:center; font-size:12px">Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.</p>
+    </div>
+
+    <!-- TELA 2: Cadastro -->
+    <div id="tela2" class="hidden">
+      <h2>Faça seu cadastro</h2>
+      <input type="text" placeholder="Identidade Militar">
+      <input type="password" placeholder="Senha">
+      <input type="password" placeholder="Confirme a Senha">
+      <button onclick="mostrarTela('tela1')">Continuar</button>
+    </div>
+
+    <!-- TELA 3: Função -->
+    <div id="tela3" class="hidden">
+      <h2>Selecione sua função</h2>
+      <button class="light-purple">Of de Dia</button>
+      <button class="light-purple">Adj Of Dia</button>
+      <button class="light-purple">Sgt Dia ALA</button>
+      <button class="light-purple">Sgt Dia BC</button>
+      <button onclick="mostrarTela('tela4')">Continuar</button>
+    </div>
+
+    <!-- TELA 4: Postos -->
+    <div id="tela4" class="hidden">
+      <h2>Postos</h2>
+      <button class="light-purple">P1 - QR Code</button>
+      <button class="light-purple">P2 - QR Code</button>
+      <button class="light-purple">P3 - QR Code</button>
+      <button class="light-purple">P4 - QR Code</button>
+      <button class="light-purple">P5 - QR Code</button>
+      <button onclick="mostrarTela('tela5')">Gerar Formulário</button>
+    </div>
+
+    <!-- TELA 5: QR Code -->
+    <div id="tela5" class="hidden">
+      <h2>Leia o QR Code</h2>
+      <div class="qr-box">Leitor de QR Code</div>
+      <button onclick="mostrarTela('tela6')">Simular Sucesso</button>
+      <button onclick="mostrarTela('tela7')">Simular Erro</button>
+    </div>
+
+    <!-- TELA 6: Sucesso -->
+    <div id="tela6" class="hidden">
+      <h2>Sucesso!<br>QR Code lido com êxito</h2>
+      <button onclick="mostrarTela('tela8')">Continuar</button>
+    </div>
+
+    <!-- TELA 7: Erro -->
+    <div id="tela7" class="hidden">
+      <h2>Erro!<br>QR Code não lido</h2>
+      <button onclick="mostrarTela('tela8')">Continuar</button>
+    </div>
+
+    <!-- TELA 8: Formulário Final -->
+    <div id="tela8" class="hidden">
+      <h2>Formulário</h2>
+      <h3>Informações da Ronda</h3>
+      <div class="info-box">P1 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P2 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P3 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P4 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P5 - Horário que foi lido o QR Code</div>
+      <button>Finalizar Ronda</button>
+    </div>
+  </div>
+
+  <script>
+    function mostrarTela(id) {
+      document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
