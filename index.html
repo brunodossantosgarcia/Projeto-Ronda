@@ -14,13 +14,91 @@
       <img src="imagens/9gac.gif" alt="Logo 9º GAC">
     </div>
 
-    <h2>Acesse a Ronda</h2>
-    <input type="text" placeholder="Identidade">
-    <input type="password" placeholder="Senha">
-    <button>Continuar</button>
+    <!-- TELA 1: Login -->
+    <div id="tela1">
+      <h2>Acesse a Ronda</h2>
+      <input type="text" placeholder="Identidade" id="login">
+      <input type="password" placeholder="Senha" id="senha">
+      <button onclick="irParaCadastro()">Continuar</button>
+      <p style="text-align:center; font-size:14px; margin-top:10px">Primeiro acesso?</p>
+      <p style="text-align:center; font-size:12px">Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.</p>
+    </div>
 
-    <p style="text-align:center; font-size:14px; margin-top:10px">Primeiro acesso?</p>
-    <p style="text-align:center; font-size:12px">Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.</p>
+    <!-- TELA 2: Cadastro -->
+    <div id="tela2" class="hidden">
+      <h2>Faça seu cadastro</h2>
+      <input type="text" placeholder="Identidade Militar">
+      <input type="password" placeholder="Senha">
+      <input type="password" placeholder="Confirme a Senha">
+      <button onclick="irParaFuncao()">Continuar</button>
+    </div>
+
+    <!-- TELA 3: Função -->
+    <div id="tela3" class="hidden">
+      <h2>Selecione sua função</h2>
+      <button class="light-purple">Of de Dia</button>
+      <button class="light-purple">Adj Of Dia</button>
+      <button class="light-purple">Sgt Dia ALA</button>
+      <button class="light-purple">Sgt Dia BC</button>
+      <button onclick="irParaPostos()">Continuar</button>
+    </div>
+
+    <!-- TELA 4: Postos -->
+    <div id="tela4" class="hidden">
+      <h2>Postos</h2>
+      <button class="light-purple">P1 - QR Code</button>
+      <button class="light-purple">P2 - QR Code</button>
+      <button class="light-purple">P3 - QR Code</button>
+      <button class="light-purple">P4 - QR Code</button>
+      <button class="light-purple">P5 - QR Code</button>
+      <button onclick="irParaQR()">Gerar Formulário</button>
+    </div>
+
+    <!-- TELA 5: QR Code -->
+    <div id="tela5" class="hidden">
+      <h2>Leia o QR Code</h2>
+      <div class="qr-box">Leitor de QR Code</div>
+      <button onclick="qrSucesso()">Simular Sucesso</button>
+      <button onclick="qrErro()">Simular Erro</button>
+    </div>
+
+    <!-- TELA 6: Sucesso -->
+    <div id="tela6" class="hidden">
+      <h2>Sucesso!<br>QR Code lido com êxito</h2>
+      <button onclick="irParaFormulario()">Continuar</button>
+    </div>
+
+    <!-- TELA 7: Erro -->
+    <div id="tela7" class="hidden">
+      <h2>Erro!<br>QR Code não lido</h2>
+      <button onclick="irParaFormulario()">Continuar</button>
+    </div>
+
+    <!-- TELA 8: Formulário Final -->
+    <div id="tela8" class="hidden">
+      <h2>Formulário</h2>
+      <h3>Informações da Ronda</h3>
+      <div class="info-box">P1 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P2 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P3 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P4 - Horário que foi lido o QR Code</div>
+      <div class="info-box">P5 - Horário que foi lido o QR Code</div>
+      <button>Finalizar Ronda</button>
+    </div>
   </div>
+
+  <script>
+    function mostrarTela(id) {
+      document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function irParaCadastro() { mostrarTela('tela2'); }
+    function irParaFuncao() { mostrarTela('tela3'); }
+    function irParaPostos() { mostrarTela('tela4'); }
+    function irParaQR() { mostrarTela('tela5'); }
+    function qrSucesso() { mostrarTela('tela6'); }
+    function qrErro() { mostrarTela('tela7'); }
+    function irParaFormulario() { mostrarTela('tela8'); }
+  </script>
 </body>
 </html>
