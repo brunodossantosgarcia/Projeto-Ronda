@@ -114,22 +114,22 @@
     <!-- TELA 3: Função -->
     <div id="tela3" class="hidden">
       <h2>Selecione sua função</h2>
-      <button class="light-purple">Of de Dia</button>
-      <button class="light-purple">Adj Of Dia</button>
-      <button class="light-purple">Sgt Dia ALA</button>
-      <button class="light-purple">Sgt Dia BC</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Of de Dia</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Adj Of Dia</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Sgt Dia ALA</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Sgt Dia BC</button>
       <button onclick="mostrarTela('tela4')">Continuar</button>
     </div>
 
     <!-- TELA 4: Postos -->
     <div id="tela4" class="hidden">
       <h2>Postos</h2>
-      <button class="light-purple">P1 - QR Code</button>
-      <button class="light-purple">P2 - QR Code</button>
-      <button class="light-purple">P3 - QR Code</button>
-      <button class="light-purple">P4 - QR Code</button>
-      <button class="light-purple">P5 - QR Code</button>
-      <button onclick="mostrarTela('tela5')">Gerar Formulário</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P1 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P2 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P3 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P4 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P5 - QR Code</button>
+      <button onclick="mostrarTela('tela8')">Gerar Formulário</button>
     </div>
 
     <!-- TELA 5: QR Code -->
@@ -143,13 +143,13 @@
     <!-- TELA 6: Sucesso -->
     <div id="tela6" class="hidden">
       <h2>Sucesso!<br>QR Code lido com êxito</h2>
-      <button onclick="mostrarTela('tela8')">Continuar</button>
+      <button onclick="mostrarTela('tela4')">Continuar</button>
     </div>
 
     <!-- TELA 7: Erro -->
     <div id="tela7" class="hidden">
       <h2>Erro!<br>QR Code não lido</h2>
-      <button onclick="mostrarTela('tela8')">Continuar</button>
+      <button onclick="mostrarTela('tela4')">Continuar</button>
     </div>
 
     <!-- TELA 8: Formulário Final -->
