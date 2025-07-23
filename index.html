@@ -1,13 +1,15 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ronda 9º GAC</title>
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <link rel="stylesheet" href="style.css"
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
-  <link href="https://fonts.googleapis.c>om/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
   <div class="container">
@@ -21,7 +23,7 @@
       <input type="text" placeholder="Identidade" id="login">
       <input type="password" placeholder="Senha" id="senha">
       <button onclick="mostrarTela('tela3')">Continuar</button>
-      <button onclick="mostrarTela('tela2')">Primeiro acesso?</p>
+      <button onclick="mostrarTela('tela2')">Primeiro acesso?</button>
       <p style="text-align:center; font-size:12px">Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.</p>
     </div>
 
@@ -41,7 +43,6 @@
       <button onclick="mostrarTela('tela4')" class="light-purple">Adj Of Dia</button>
       <button onclick="mostrarTela('tela4')" class="light-purple">Sgt Dia ALA</button>
       <button onclick="mostrarTela('tela4')" class="light-purple">Sgt Dia BC</button>
-      <button onclick="mostrarTela('tela4')">Continuar</button>
     </div>
 
     <!-- TELA 4: Postos -->
@@ -55,12 +56,14 @@
       <button onclick="mostrarTela('tela8')">Gerar Formulário</button>
     </div>
 
-    <!-- TELA 5: QR Code -->
-    <div id="tela5" class="hidden">
-      <h2>Leia o QR Code</h2>
-      <div id="resultado" class="info-box">Aguardando leitura...</div>
-      <button onclick="stopScan()">Cancelar</button>
-    </div>
+<!-- TELA 5: QR Code -->
+<div id="tela5" class="hidden">
+  <h2>Leia o QR Code</h2>
+  <div id="reader" style="width: 100%;"></div>
+  <div id="resultado" class="info-box">Aguardando leitura...</div>
+  <button onclick="stopScan('tela4')">Cancelar</button>
+</div>
+
 
     <!-- TELA 6: Sucesso -->
     <div id="tela6" class="hidden">
@@ -78,20 +81,16 @@
     <div id="tela8" class="hidden">
       <h2>Formulário</h2>
       <h3>Informações da Ronda</h3>
-      <div class="info-box">P1 - Horário que foi lido o QR Code</div>
-      <div class="info-box">P2 - Horário que foi lido o QR Code</div>
-      <div class="info-box">P3 - Horário que foi lido o QR Code</div>
-      <div class="info-box">P4 - Horário que foi lido o QR Code</div>
-      <div class="info-box">P5 - Horário que foi lido o QR Code</div>
-      <button>Finalizar Ronda</button>
+      <div class="info-box">P1: <span id="p1info">---</span></div>
+      <div class="info-box">P2: <span id="p2info">---</span></div>
+      <div class="info-box">P3: <span id="p3info">---</span></div>
+      <div class="info-box">P4: <span id="p4info">---</span></div>
+      <div class="info-box">P5: <span id="p5info">---</span></div>
+      <button onclick="finalizarRonda()">Finalizar Ronda</button>
+      <button onclick="gerarPDF()">Exportar para PDF</button>
+      <button onclick="gerarExcel()">Exportar para Excel</button>
     </div>
   </div>
-
-  <script>
-    function mostrarTela(id) {
-      document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
-    }
-  </script>
+  
 </body>
 </html>
