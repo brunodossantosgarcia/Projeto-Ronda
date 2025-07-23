@@ -64,11 +64,42 @@ let scanner = null;
 }
 
    function preencherFormulario() {
+  let inicio = null;
+  let fim = null;
+
   for (let i = 1; i <= 5; i++) {
     const valor = localStorage.getItem(`P${i}`) || 'Não registrado';
     document.getElementById(`p${i}info`).textContent = valor;
+
+    if (valor !== 'Não registrado') {
+      const partes = valor.split(' - ')[1]; // ex: "21/07/2025 14:20:33"
+      if (partes) {
+        const [dia, mes, anoHora] = partes.split('/');
+        const [ano, hora] = anoHora.split(' ');
+        const dataCompleta = new Date(`${ano}-${mes}-${dia}T${hora}`);
+        
+        if (!inicio) inicio = dataCompleta;
+        fim = dataCompleta;
+      }
+    }
   }
+
+  let duracao = "---";
+  if (inicio && fim) {
+    const diffMs = fim - inicio;
+
+    const segundosTotais = Math.floor(diffMs / 1000);
+    const dias = Math.floor(segundosTotais / 86400);
+    const horas = Math.floor((segundosTotais % 86400) / 3600);
+    const minutos = Math.floor((segundosTotais % 3600) / 60);
+    const segundos = segundosTotais % 60;
+
+    duracao = `${dias}d ${horas}h ${minutos}min ${segundos}s`;
+  }
+
+  document.getElementById("tempoTotal").textContent = duracao;
 }
+
 
 function gerarPDF() {
   const elemento = document.getElementById("tela8");
