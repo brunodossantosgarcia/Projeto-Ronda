@@ -3,10 +3,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ronda 9º GAC</title>
-  <link rel="stylesheet" href="style.css"
-  <link rel="javascript" href="script.js">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <link rel="stylesheet" href="style.css"
+  <script src="script.js" defer></script>
+  <link href="https://fonts.googleapis.c>om/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  
 </head>
 <body>
   <div class="container">
@@ -57,9 +58,8 @@
     <!-- TELA 5: QR Code -->
     <div id="tela5" class="hidden">
       <h2>Leia o QR Code</h2>
-      <div class="qr-box">Leitor de QR Code</div>
-      <button onclick="mostrarTela('tela6')">Simular Sucesso</button>
-      <button onclick="mostrarTela('tela7')">Simular Erro</button>
+      <div id="resultado" class="info-box">Aguardando leitura...</div>
+      <button onclick="stopScan()">Cancelar</button>
     </div>
 
     <!-- TELA 6: Sucesso -->
