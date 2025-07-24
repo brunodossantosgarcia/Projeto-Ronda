@@ -1,48 +1,14 @@
-const API_URL = "http://localhost:5000/api/users";
 let scanner = null;
-let horarios = [];
 
-function mostrarTela(id) {
-  document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
+    function mostrarTela(id) {
+      document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
 
-async function cadastrar() {
-  const identidade = document.getElementById("cadIdentidade").value;
-  const senha = document.getElementById("cadSenha").value;
+      if (id === 'tela5') iniciarLeituraQRCode();
+      if (id === 'tela8') preencherFormulario();
+    }
 
-  const res = await fetch(API_URL + "/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha })
-  });
-
-  const data = await res.json();
-  alert(data.msg);
-  if (res.ok) mostrarTela('tela1');
-}
-
-async function login() {
-  const identidade = document.getElementById("login").value;
-  const senha = document.getElementById("senha").value;
-
-  const res = await fetch(API_URL + "/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha })
-  });
-
-  const data = await res.json();
-  if (res.ok) {
-    localStorage.setItem("token", data.token);
-    mostrarTela('tela3');
-  } else {
-    alert(data.msg);
-  }
-}
-
-// QR Code
-function iniciarLeituraQRCode() {
+    function iniciarLeituraQRCode() {
   const reader = new Html5Qrcode("reader");
   const config = { fps: 10, qrbox: 200 };
 
@@ -50,36 +16,129 @@ function iniciarLeituraQRCode() {
     { facingMode: "environment" },
     config,
     qrCodeMessage => {
-      const hora = new Date();
-      horarios.push(hora);
-      document.getElementById("resultado").innerText = `QR Lido: ${qrCodeMessage} às ${hora.toLocaleTimeString()}`;
-      reader.stop();
-      mostrarTela('tela6');
+      const postosValidos = ["POSTO_P1", "POSTO_P2", "POSTO_P3", "POSTO_P4", "POSTO_P5"];
+
+      if (!postosValidos.includes(qrCodeMessage)) {
+        document.getElementById("resultado").innerText = "QR inválido!";
+        return;
+      }
+
+      document.getElementById("resultado").innerText = "QR Lido: " + qrCodeMessage;
+
+      const agora = new Date();
+      const dia = agora.toLocaleDateString('pt-BR');
+      const hora = agora.toLocaleTimeString('pt-BR');
+      const dataHora = `${dia} ${hora}`;
+
+      // Armazena no posto correspondente
+      const postoID = qrCodeMessage.replace("POSTO_", ""); // ex: "P3"
+      localStorage.setItem(postoID, `${qrCodeMessage} - ${dataHora}`);
+
+      reader.stop().then(() => {
+        mostrarTela('tela6');
+      });
     },
-    err => console.log("Escaneando...")
+    error => {
+      console.log("Aguardando leitura...");
+    }
   ).catch(err => {
     document.getElementById("resultado").innerText = "Erro ao acessar câmera";
+    console.error(err);
   });
 
   scanner = reader;
 }
 
-function stopScan() {
-  if (scanner) scanner.stop();
-  mostrarTela('tela4');
+    function stopScan() {
+      if (scanner) scanner.stop();
+      mostrarTela('tela4');
+    }
+    
+    function stopScan() {
+  if (scanner) {
+    scanner.stop().then(() => {
+      scanner.clear(); // limpa o conteúdo da div #reader
+      mostrarTela('tela4');
+    }).catch(err => {
+      console.error("Erro ao parar câmera: ", err);
+      mostrarTela('tela4');
+    });
+  } else {
+    mostrarTela('tela4');
+  }
+}
+
+   function preencherFormulario() {
+  let inicio = null;
+  let fim = null;
+
+  for (let i = 1; i <= 5; i++) {
+    const valor = localStorage.getItem(`P${i}`) || 'Não registrado';
+    document.getElementById(`p${i}info`).textContent = valor;
+
+    if (valor !== 'Não registrado') {
+      const partes = valor.split(' - ')[1]; // ex: "21/07/2025 14:20:33"
+      if (partes) {
+        const [dia, mes, anoHora] = partes.split('/');
+        const [ano, hora] = anoHora.split(' ');
+        const dataCompleta = new Date(`${ano}-${mes}-${dia}T${hora}`);
+        
+        if (!inicio) inicio = dataCompleta;
+        fim = dataCompleta;
+      }
+    }
+  }
+
+  let duracao = "---";
+  if (inicio && fim) {
+    const diffMs = fim - inicio;
+
+    const segundosTotais = Math.floor(diffMs / 1000);
+    const dias = Math.floor(segundosTotais / 86400);
+    const horas = Math.floor((segundosTotais % 86400) / 3600);
+    const minutos = Math.floor((segundosTotais % 3600) / 60);
+    const segundos = segundosTotais % 60;
+
+    duracao = `${dias}d ${horas}h ${minutos}min ${segundos}s`;
+  }
+
+  document.getElementById("tempoTotal").textContent = duracao;
+}
+
+
+function gerarPDF() {
+  const elemento = document.getElementById("tela8");
+  const opt = {
+    margin:       0.5,
+    filename:     'ronda_9gac.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().from(elemento).set(opt).save();
+}
+
+function gerarExcel() {
+  const dados = [];
+  for (let i = 1; i <= 5; i++) {
+    const valor = localStorage.getItem(`P${i}`) || 'Não registrado';
+    dados.push({ Posto: `P${i}`, Horário: valor });
+  }
+
+  const worksheet = XLSX.utils.json_to_sheet(dados);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Ronda");
+
+  XLSX.writeFile(workbook, "ronda_9gac.xlsx");
 }
 
 function finalizarRonda() {
-  const labels = ["p1info", "p2info", "p3info", "p4info", "p5info"];
-  horarios.forEach((hora, i) => {
-    document.getElementById(labels[i]).innerText = `P${i + 1}: ${hora.toLocaleString()}`;
-  });
-
-  if (horarios.length >= 2) {
-    const diff = horarios[horarios.length - 1] - horarios[0];
-    const totalMin = Math.floor(diff / 60000);
-    document.getElementById("tempoTotal").innerText = `Tempo total da ronda: ${totalMin} minutos`;
+  // Limpa os dados de P1 a P5 e o contador
+  for (let i = 1; i <= 5; i++) {
+    localStorage.removeItem(`P${i}`);
   }
+  localStorage.removeItem("proxPosto");
 
-  mostrarTela('tela8');
+  alert("Ronda finalizada com sucesso.");
+  mostrarTela("tela1");
 }

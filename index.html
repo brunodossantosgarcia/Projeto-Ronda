@@ -22,73 +22,78 @@
       <h2>Acesse a Ronda</h2>
       <input type="text" placeholder="Identidade" id="login">
       <input type="password" placeholder="Senha" id="senha">
-      <button onclick="login()">Continuar</button>
+      <button onclick="mostrarTela('tela3')">Continuar</button>
       <button onclick="mostrarTela('tela2')">Primeiro acesso?</button>
+      <p style="text-align:center; font-size:12px">Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.</p>
     </div>
 
     <!-- TELA 2: Cadastro -->
-     <div id="tela2" class="hidden">
+    <div id="tela2" class="hidden">
       <h2>Faça seu cadastro</h2>
-      <input type="text" placeholder="Identidade Militar" id="cadIdentidade">
-      <input type="password" placeholder="Senha" id="cadSenha">
-      <button onclick="cadastrar()">Cadastrar</button>
-      <button onclick="mostrarTela('tela1')">Voltar</button>
+      <input type="text" placeholder="Identidade Militar">
+      <input type="password" placeholder="Senha">
+      <input type="password" placeholder="Confirme a Senha">
+      <button onclick="mostrarTela('tela1')">Continuar</button>
     </div>
 
     <!-- TELA 3: Função -->
-     <div id="tela3" class="hidden">
+    <div id="tela3" class="hidden">
       <h2>Selecione sua função</h2>
-      <button onclick="mostrarTela('tela4')">Of de Dia</button>
-      <button onclick="mostrarTela('tela4')">Adj Of Dia</button>
-      <button onclick="mostrarTela('tela4')">Sgt Dia ALA</button>
-      <button onclick="mostrarTela('tela4')">Sgt Dia BC</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Of de Dia</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Adj Of Dia</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Sgt Dia ALA</button>
+      <button onclick="mostrarTela('tela4')" class="light-purple">Sgt Dia BC</button>
     </div>
 
     <!-- TELA 4: Postos -->
     <div id="tela4" class="hidden">
       <h2>Postos</h2>
-      <button onclick="mostrarTela('tela5')">P1</button>
-      <button onclick="mostrarTela('tela5')">P2</button>
-      <button onclick="mostrarTela('tela5')">P3</button>
-      <button onclick="mostrarTela('tela5')">P4</button>
-      <button onclick="mostrarTela('tela5')">P5</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P1 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P2 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P3 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P4 - QR Code</button>
+      <button onclick="mostrarTela('tela5')" class="light-purple">P5 - QR Code</button>
       <button onclick="mostrarTela('tela8')">Gerar Formulário</button>
     </div>
 
 <!-- TELA 5: QR Code -->
-    <div id="tela5" class="hidden">
-      <h2>Leia o QR Code</h2>
-      <div id="reader" style="width: 100%; max-width: 300px; margin: auto;"></div>
-      <div id="resultado" class="info-box">Aguardando leitura...</div>
-      <button onclick="stopScan()">Cancelar</button>
-    </div>
+<div id="tela5" class="hidden">
+  <h2>Leia o QR Code</h2>
+  <div id="reader" style="width: 100%;"></div>
+  <div id="resultado" class="info-box">Aguardando leitura...</div>
+  <button onclick="stopScan('tela4')">Cancelar</button>
+</div>
 
 
     <!-- TELA 6: Sucesso -->
     <div id="tela6" class="hidden">
-      <h2>Sucesso!</h2>
-      <button onclick="mostrarTela('tela4')">Voltar</button>
+      <h2>Sucesso!<br>QR Code lido com êxito</h2>
+      <button onclick="mostrarTela('tela4')">Continuar</button>
     </div>
 
     <!-- TELA 7: Erro -->
     <div id="tela7" class="hidden">
-      <h2>Erro!</h2>
-      <button onclick="mostrarTela('tela4')">Voltar</button>
+      <h2>Erro!<br>QR Code não lido</h2>
+      <button onclick="mostrarTela('tela4')">Continuar</button>
     </div>
 
     <!-- TELA 8: Formulário Final -->
     <div id="tela8" class="hidden">
-      <h2>Resumo da Ronda</h2>
-      <div id="formulario">
-        <p id="p1info"></p>
-        <p id="p2info"></p>
-        <p id="p3info"></p>
-        <p id="p4info"></p>
-        <p id="p5info"></p>
+      <h2>Formulário</h2>
+      <h3>Informações da Ronda</h3>
+      <div class="info-box">P1: <span id="p1info">---</span></div>
+      <div class="info-box">P2: <span id="p2info">---</span></div>
+      <div class="info-box">P3: <span id="p3info">---</span></div>
+      <div class="info-box">P4: <span id="p4info">---</span></div>
+      <div class="info-box">P5: <span id="p5info">---</span></div>
+      <div class="info-box">
+        <strong>Duração total da ronda:</strong> <span id="tempoTotal">---</span>
       </div>
-      <p id="tempoTotal"></p>
       <button onclick="finalizarRonda()">Finalizar Ronda</button>
+      <button onclick="gerarPDF()">Exportar para PDF</button>
+      <button onclick="gerarExcel()">Exportar para Excel</button>
     </div>
+  </div>
   
 </body>
 </html>
