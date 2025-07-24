@@ -16,18 +16,23 @@ let scanner = null;
     { facingMode: "environment" },
     config,
     qrCodeMessage => {
+      const postosValidos = ["POSTO_P1", "POSTO_P2", "POSTO_P3", "POSTO_P4", "POSTO_P5"];
+
+      if (!postosValidos.includes(qrCodeMessage)) {
+        document.getElementById("resultado").innerText = "QR inválido!";
+        return;
+      }
+
       document.getElementById("resultado").innerText = "QR Lido: " + qrCodeMessage;
 
-      // Obter data e hora formatadas
       const agora = new Date();
       const dia = agora.toLocaleDateString('pt-BR');
       const hora = agora.toLocaleTimeString('pt-BR');
       const dataHora = `${dia} ${hora}`;
 
-      // Contador de posto (P1 até P5)
-      let posto = localStorage.getItem("proxPosto") || 1;
-      localStorage.setItem(`P${posto}`, `${qrCodeMessage} - ${dataHora}`);
-      localStorage.setItem("proxPosto", parseInt(posto) + 1);
+      // Armazena no posto correspondente
+      const postoID = qrCodeMessage.replace("POSTO_", ""); // ex: "P3"
+      localStorage.setItem(postoID, `${qrCodeMessage} - ${dataHora}`);
 
       reader.stop().then(() => {
         mostrarTela('tela6');
@@ -43,6 +48,7 @@ let scanner = null;
 
   scanner = reader;
 }
+
 
     function stopScan() {
       if (scanner) scanner.stop();
