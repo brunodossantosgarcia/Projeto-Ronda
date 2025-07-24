@@ -49,7 +49,6 @@ let scanner = null;
   scanner = reader;
 }
 
-
     function stopScan() {
       if (scanner) scanner.stop();
       mostrarTela('tela4');
