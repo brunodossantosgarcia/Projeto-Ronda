@@ -142,3 +142,40 @@ function finalizarRonda() {
   alert("Ronda finalizada com sucesso.");
   mostrarTela("tela1");
 }
+
+const API_URL = "http://localhost:5000/api/users";
+
+async function cadastrar() {
+  const identidade = document.querySelector('#tela2 input[placeholder="Identidade Militar"]').value;
+  const senha = document.querySelector('#tela2 input[placeholder="Senha"]').value;
+
+  const res = await fetch(`${API_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identidade, senha })
+  });
+
+  const data = await res.json();
+  alert(data.msg);
+  if (res.ok) mostrarTela("tela1");
+}
+
+async function login() {
+  const identidade = document.getElementById("login").value;
+  const senha = document.getElementById("senha").value;
+
+  const res = await fetch(`${API_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identidade, senha })
+  });
+
+  const data = await res.json();
+  if (res.ok) {
+    localStorage.setItem("token", data.token);
+    mostrarTela("tela3");
+  } else {
+    alert(data.msg);
+  }
+}
+

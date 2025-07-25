@@ -23,7 +23,7 @@
       <h2>Acesse a Ronda</h2>
       <input type="text" placeholder="Identidade" id="login">
       <input type="password" placeholder="Senha" id="senha">
-      <button onclick="mostrarTela('tela3')">Continuar</button>
+      <button onclick="login()">Entrar</button>
       <button onclick="mostrarTela('tela2')">Primeiro acesso?</button>
       <p style="text-align:center; font-size:12px">Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.</p>
     </div>
@@ -34,7 +34,8 @@
       <input type="text" placeholder="Identidade Militar">
       <input type="password" placeholder="Senha">
       <input type="password" placeholder="Confirme a Senha">
-      <button onclick="mostrarTela('tela1')">Continuar</button>
+      <button onclick="cadastrar()">Cadastrar</button>
+      <button onclick="mostrarTela('tela1')">Voltar</button>
     </div>
 
     <!-- TELA 3: Função -->
@@ -49,20 +50,20 @@
     <!-- TELA 4: Postos -->
     <div id="tela4" class="hidden">
       <h2>Postos</h2>
-      <button onclick="mostrarTela('tela5')" class="light-purple">P1 - QR Code</button>
-      <button onclick="mostrarTela('tela5')" class="light-purple">P2 - QR Code</button>
-      <button onclick="mostrarTela('tela5')" class="light-purple">P3 - QR Code</button>
-      <button onclick="mostrarTela('tela5')" class="light-purple">P4 - QR Code</button>
-      <button onclick="mostrarTela('tela5')" class="light-purple">P5 - QR Code</button>
+      <button onclick="mostrarTela('tela5')">P1</button>
+      <button onclick="mostrarTela('tela5')">P2</button>
+      <button onclick="mostrarTela('tela5')">P3</button>
+      <button onclick="mostrarTela('tela5')">P4</button>
+      <button onclick="mostrarTela('tela5')">P5</button>
       <button onclick="mostrarTela('tela8')">Gerar Formulário</button>
     </div>
 
 <!-- TELA 5: QR Code -->
 <div id="tela5" class="hidden">
-  <h2>Leia o QR Code</h2>
-  <div id="reader" style="width: 100%;"></div>
-  <div id="resultado" class="info-box">Aguardando leitura...</div>
-  <button onclick="stopScan('tela4')">Cancelar</button>
+      <h2>Leia o QR Code</h2>
+      <div id="reader" style="width: 100%; max-width: 300px; margin: auto;"></div>
+      <div id="resultado" class="info-box">Aguardando leitura...</div>
+      <button onclick="stopScan()">Cancelar</button>
 </div>
 
 
