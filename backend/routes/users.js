@@ -37,5 +37,3 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ msg: "Erro no login." });
   }
 });
-
-module.exports = router;
