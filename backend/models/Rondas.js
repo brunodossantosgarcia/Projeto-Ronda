@@ -48,4 +48,17 @@ router.get("/", autenticar, async (req, res) => {
   res.json(rondas);
 });
 
+// ✅ Exportar todas as rondas em formato JSON (Admin pode usar para gerar Excel)
+router.get("/exportar", autenticar, async (req, res) => {
+  if (req.usuario !== "admin") return res.status(403).json({ msg: "Acesso negado" });
+
+  try {
+    const rondas = await Ronda.find().sort({ createdAt: -1 });
+    res.json(rondas);
+  } catch (err) {
+    res.status(500).json({ msg: "Erro ao exportar rondas" });
+  }
+});
+
+
 module.exports = router;

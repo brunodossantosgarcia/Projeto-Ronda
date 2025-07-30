@@ -25,6 +25,7 @@
 <table id="tabelaRondas">
   <thead>
     <tr><th>Usuário</th><th>Posto</th><th>Data/Hora</th></tr>
+    <button onclick="exportarExcelRondasMongo()">📄 Exportar Rondas (MongoDB) para Excel</button>
   </thead>
   <tbody></tbody>
 </table>
@@ -55,6 +56,35 @@
     function voltar() {
       window.location.href = "index.html";
     }
+    function exportarExcelRondasMongo() {
+  fetch("http://localhost:5000/api/rondas/exportar", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(res => res.json())
+  .then(rondas => {
+    if (!rondas || rondas.length === 0) {
+      alert("Nenhuma ronda encontrada no banco.");
+      return;
+    }
+
+    // ✅ Formata os dados para Excel
+    const dados = rondas.map(r => ({
+      Usuario: r.usuario,
+      Posto: r.posto,
+      "Data/Hora": r.dataHora
+    }));
+
+    // ✅ Gera planilha com SheetJS
+    const worksheet = XLSX.utils.json_to_sheet(dados);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Rondas");
+
+    // ✅ Salva o arquivo
+    XLSX.writeFile(workbook, "relatorio_rondas_mongodb.xlsx");
+  })
+  .catch(err => alert("Erro ao exportar: " + err));
+}
+
   </script>
 </body>
 </html>
