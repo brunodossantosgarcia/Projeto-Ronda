@@ -1,14 +1,49 @@
+const API_URL = "http://localhost:5000/api";
 let scanner = null;
 
-    function mostrarTela(id) {
-      document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
+function mostrarTela(id) {
+  document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
 
-      if (id === 'tela5') iniciarLeituraQRCode();
-      if (id === 'tela8') preencherFormulario();
-    }
+// ✅ Cadastro
+async function cadastrar() {
+  const identidade = document.getElementById("cadIdentidade").value;
+  const senha = document.getElementById("cadSenha").value;
 
-    function iniciarLeituraQRCode() {
+  const res = await fetch(`${API_URL}/users/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identidade, senha })
+  });
+  const data = await res.json();
+  alert(data.msg || "Cadastro realizado");
+  if (res.ok) mostrarTela("tela1");
+}
+
+// ✅ Login
+async function login() {
+  const identidade = document.getElementById("login").value;
+  const senha = document.getElementById("senha").value;
+
+  const res = await fetch(`${API_URL}/users/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identidade, senha })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("usuario", identidade);
+    mostrarTela("tela3");
+  } else {
+    alert(data.msg);
+  }
+}
+
+// ✅ Inicia leitura QR para um posto específico
+function iniciarLeitura(postoEsperado) {
+  mostrarTela("tela5");
   const reader = new Html5Qrcode("reader");
   const config = { fps: 10, qrbox: 200 };
 
@@ -16,268 +51,99 @@ let scanner = null;
     { facingMode: "environment" },
     config,
     qrCodeMessage => {
-      // ✅ Lista completa de postos válidos
-      const postosValidos = [
-        "POSTO_P1", "POSTO_P2", "POSTO_P3", "POSTO_P4", "POSTO_P5",
-        "PAIOL_1", "PAIOL_2", "ARMARIA_BC", "ARMARIA_1", "ARMARIA_2"
-      ];
-
-      // 🔍 Verifica se o QR Code lido é válido
-      if (!postosValidos.includes(qrCodeMessage)) {
+      if (qrCodeMessage !== postoEsperado) {
         document.getElementById("resultado").innerText = "QR inválido!";
         return;
       }
 
-      // ✅ Atualiza resultado na tela
-      document.getElementById("resultado").innerText = "QR Lido: " + qrCodeMessage;
-
-      // ✅ Coleta data/hora e usuário atual
-      const agora = new Date();
-      const dataHora = agora.toLocaleString("pt-BR");
+      const agora = new Date().toLocaleString("pt-BR");
       const usuarioAtual = localStorage.getItem("usuario") || "Desconhecido";
 
-      // ✅ Salva o horário individual para o posto específico
-      const postoID = qrCodeMessage.replace("POSTO_", "").replace("_", "").replace("ARMARIA", "ARMARIA_");
-      localStorage.setItem(postoID, `${qrCodeMessage} - ${dataHora}`);
+      // ✅ Salva horário local
+      localStorage.setItem(postoEsperado, `${qrCodeMessage} - ${agora}`);
 
-      // ✅ Atualiza histórico consolidado no array rondas
+      // ✅ Salva no histórico local
       let rondas = JSON.parse(localStorage.getItem("rondas")) || [];
-      rondas.push({
-        usuario: usuarioAtual,
-        posto: qrCodeMessage,
-        dataHora: dataHora
-      });
+      rondas.push({ usuario: usuarioAtual, posto: qrCodeMessage, dataHora: agora });
       localStorage.setItem("rondas", JSON.stringify(rondas));
 
-      // ✅ Enviar para o backend via API
-      fetch("http://localhost:5000/api/rondas", {
+      // ✅ Envia para backend
+      fetch(`${API_URL}/rondas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + localStorage.getItem("token")
-     },
-        body: JSON.stringify({ posto: qrCodeMessage, dataHora: dataHora })
-        }).then(res => res.json())
-        .then(data => console.log("Ronda enviada:", data.msg))
-        .catch(err => console.error("Erro ao enviar ronda:", err));
-
-
-      // ✅ Para o scanner e avança para a tela de sucesso
-      reader.stop().then(() => {
-        mostrarTela("tela6");
+        },
+        body: JSON.stringify({ posto: qrCodeMessage, dataHora: agora })
       });
-    },
-    error => {
-      console.log("Aguardando leitura...");
+
+      reader.stop().then(() => mostrarTela("tela6"));
     }
-  ).catch(err => {
-    document.getElementById("resultado").innerText = "Erro ao acessar câmera";
-    console.error(err);
-  });
+  );
 
   scanner = reader;
 }
 
-    function stopScan() {
-      if (scanner) scanner.stop();
-      mostrarTela('tela4');
-    }
-    
-    function stopScan() {
-  if (scanner) {
-    scanner.stop().then(() => {
-      scanner.clear(); // limpa o conteúdo da div #reader
-      mostrarTela('tela4');
-    }).catch(err => {
-      console.error("Erro ao parar câmera: ", err);
-      mostrarTela('tela4');
-    });
-  } else {
-    mostrarTela('tela4');
-  }
+// ✅ Parar leitura
+function stopScan() {
+  if (scanner) scanner.stop().then(() => mostrarTela("tela4"));
 }
 
-   function preencherFormulario() {
-    const postos = [
-    { key: "P1", element: "p1info" },
-    { key: "P2", element: "p2info" },
-    { key: "P3", element: "p3info" },
-    { key: "P4", element: "p4info" },
-    { key: "P5", element: "p5info" },
-    { key: "PAIOL1", element: "paiol1info" },
-    { key: "PAIOL2", element: "paiol2info" },
-    { key: "ARMARIA_BC", element: "armariabcinfo" },
-    { key: "ARMARIA_1", element: "armaria1info" },
-    { key: "ARMARIA_2", element: "armaria2info" }
+// ✅ Preencher formulário com dados locais
+function preencherFormulario() {
+  const postos = [
+    { key: "POSTO_P1", el: "p1info" }, { key: "POSTO_P2", el: "p2info" },
+    { key: "POSTO_P3", el: "p3info" }, { key: "POSTO_P4", el: "p4info" },
+    { key: "POSTO_P5", el: "p5info" }, { key: "PAIOL_1", el: "paiol1info" },
+    { key: "PAIOL_2", el: "paiol2info" }, { key: "ARMARIA_BC", el: "armariabcinfo" },
+    { key: "ARMARIA_1", el: "armaria1info" }, { key: "ARMARIA_2", el: "armaria2info" }
   ];
-
   let inicio = null, fim = null;
-
   postos.forEach(p => {
-    const valor = localStorage.getItem(p.key) || "Não registrado";
-    document.getElementById(p.element).textContent = valor;
-
-    if (valor !== "Não registrado") {
-      const partes = valor.split(" - ")[1];
-      if (partes) {
-        const dataCompleta = new Date(partes);
-        if (!inicio) inicio = dataCompleta;
-        fim = dataCompleta;
-      }
+    const val = localStorage.getItem(p.key) || "Não registrado";
+    document.getElementById(p.el).textContent = val;
+    if (val !== "Não registrado") {
+      const dt = new Date(val.split(" - ")[1]);
+      if (!inicio) inicio = dt;
+      fim = dt;
     }
   });
-
-  let duracao = "---";
-  if (inicio && fim) {
-    const diff = fim - inicio;
-    const min = Math.floor(diff / 60000);
-    duracao = `${min} minutos`;
-  }
-  document.getElementById("tempoTotal").textContent = duracao;
+  document.getElementById("tempoTotal").textContent =
+    inicio && fim ? `${Math.floor((fim - inicio)/60000)} minutos` : "---";
 }
 
+// ✅ Exportar Excel local
 function gerarExcel() {
-  const dados = [];
-  for (let i = 1; i <= 5; i++) {
-    const valor = localStorage.getItem(`P${i}`) || 'Não registrado';
-    dados.push({ Posto: `P${i}`, Horário: valor });
-  }
-
-  const worksheet = XLSX.utils.json_to_sheet(dados);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Ronda");
-
-  XLSX.writeFile(workbook, "ronda_9gac.xlsx");
+  const rondas = JSON.parse(localStorage.getItem("rondas")) || [];
+  if (!rondas.length) return alert("Nenhuma ronda registrada.");
+  const ws = XLSX.utils.json_to_sheet(rondas);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Rondas");
+  XLSX.writeFile(wb, "relatorio_local.xlsx");
 }
 
-function finalizarRonda() {
-  // Limpa os dados de P1 a P5 e o contador
-  for (let i = 1; i <= 5; i++) {
-    localStorage.removeItem(`P${i}`);
-  }
-  localStorage.removeItem("proxPosto");
+// ✅ Exportar PDF
+function gerarPDF() {
+  html2pdf().from(document.getElementById("tela8")).save("relatorio_ronda.pdf");
+}
 
-  alert("Ronda finalizada com sucesso.");
+// ✅ Exportar Excel do MongoDB
+function exportarExcelRondasMongo() {
+  fetch(`${API_URL}/rondas/exportar`, {
+    headers: { "Authorization": "Bearer " + localStorage.getItem("token") }
+  })
+    .then(res => res.json())
+    .then(rondas => {
+      const ws = XLSX.utils.json_to_sheet(rondas);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "RondasMongo");
+      XLSX.writeFile(wb, "relatorio_mongodb.xlsx");
+    });
+}
+
+// ✅ Finalizar ronda
+function finalizarRonda() {
+  localStorage.removeItem("rondas");
+  alert("Ronda finalizada.");
   mostrarTela("tela1");
 }
-
-function gerarExcelRondas() {
-  const rondas = JSON.parse(localStorage.getItem("rondas")) || [];
-
-  if (rondas.length === 0) {
-    alert("Nenhuma ronda registrada ainda.");
-    return;
-  }
-
-  // Monta a planilha
-  const worksheet = XLSX.utils.json_to_sheet(rondas);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Rondas");
-
-  // Salva arquivo
-  XLSX.writeFile(workbook, "relatorio_rondas_completo.xlsx");
-}
-
-fetch("http://localhost:3000/api/usuarios", {
-  headers: {
-    'Authorization': 'Bearer ' + token
-  }
-})
-.then(res => res.json())
-.then(usuarios => {
-  const tbody = document.querySelector("#tabelaUsuarios tbody");
-  usuarios.forEach(u => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${u.identidade}</td>
-      <td>${new Date(u.createdAt).toLocaleString()}</td>
-      <td>
-        <button onclick="resetarSenha('${u._id}')">🔄 Resetar</button>
-        <button onclick="excluirUsuario('${u._id}')">🗑️ Excluir</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-});
-
-function resetarSenha(id) {
-  if (confirm("Deseja resetar a senha deste usuário para '123456'?")) {
-    fetch(`http://localhost:3000/api/usuarios/resetar/${id}`, {
-      method: "PUT",
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
-    .then(res => res.json())
-    .then(() => {
-      alert("Senha resetada com sucesso.");
-    });
-  }
-}
-
-function excluirUsuario(id) {
-  if (confirm("Tem certeza que deseja excluir este usuário?")) {
-    fetch(`http://localhost:3000/api/usuarios/${id}`, {
-      method: "DELETE",
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
-    .then(res => res.json())
-    .then(() => {
-      alert("Usuário excluído.");
-      location.reload();
-    });
-  }
-}
-
-fetch("http://localhost:5000/api/rondas", {
-  headers: { "Authorization": "Bearer " + token }
-})
-.then(res => res.json())
-.then(rondas => {
-  const tbody = document.querySelector("#tabelaRondas tbody");
-  rondas.forEach(r => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${r.usuario}</td><td>${r.posto}</td><td>${r.dataHora}</td>`;
-    tbody.appendChild(tr);
-  });
-});
-
-
-const API_URL = "http://localhost:5000/api/users";
-
-async function cadastrar() {
-  const identidade = document.querySelector('#tela2 input[placeholder="Identidade Militar"]').value;
-  const senha = document.querySelector('#tela2 input[placeholder="Senha"]').value;
-
-  const res = await fetch(`${API_URL}/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha })
-  });
-
-  const data = await res.json();
-  alert(data.msg);
-  if (res.ok) mostrarTela("tela1");
-}
-
-async function login() {
-  const identidade = document.getElementById("login").value;
-  const senha = document.getElementById("senha").value;
-
-  const res = await fetch(`${API_URL}/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha })
-  });
-
-  const data = await res.json();
-  if (res.ok) {
-    localStorage.setItem("token", data.token);
-    mostrarTela("tela3");
-  } else {
-    alert(data.msg);
-  }
-}
-
