@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Ronda 9º GAC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Usuários Cadastrados</h2>
+    <table id="tabelaUsuarios">
+      <thead>
+  <tr>
+    <th>Identidade</th>
+    <th>Criado em</th>
+    <th>Ações</th>
+  </tr>
+</thead>
+<tbody></tbody>
+    </table>
+    <button onclick="voltar()">Voltar</button>
+  </div>
+
+  <h2>Histórico de Rondas</h2>
+<table id="tabelaRondas">
+  <thead>
+    <tr><th>Usuário</th><th>Posto</th><th>Data/Hora</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+
+  <script>
+    const token = localStorage.getItem('token');
+
+    fetch("http://localhost:3000/api/usuarios", {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(usuarios => {
+      const tbody = document.querySelector("#tabelaUsuarios tbody");
+      usuarios.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${u.identidade}</td><td>${new Date(u.createdAt).toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      alert("Erro ao carregar usuários. Verifique se você é admin.");
+      window.location.href = "index.html";
+    });
+
+    function voltar() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

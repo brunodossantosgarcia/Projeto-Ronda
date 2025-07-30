@@ -49,6 +49,19 @@ let scanner = null;
       });
       localStorage.setItem("rondas", JSON.stringify(rondas));
 
+      // ✅ Enviar para o backend via API
+      fetch("http://localhost:5000/api/rondas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("token")
+     },
+        body: JSON.stringify({ posto: qrCodeMessage, dataHora: dataHora })
+        }).then(res => res.json())
+        .then(data => console.log("Ronda enviada:", data.msg))
+        .catch(err => console.error("Erro ao enviar ronda:", err));
+
+
       // ✅ Para o scanner e avança para a tela de sucesso
       reader.stop().then(() => {
         mostrarTela("tela6");
@@ -164,6 +177,72 @@ function gerarExcelRondas() {
   // Salva arquivo
   XLSX.writeFile(workbook, "relatorio_rondas_completo.xlsx");
 }
+
+fetch("http://localhost:3000/api/usuarios", {
+  headers: {
+    'Authorization': 'Bearer ' + token
+  }
+})
+.then(res => res.json())
+.then(usuarios => {
+  const tbody = document.querySelector("#tabelaUsuarios tbody");
+  usuarios.forEach(u => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${u.identidade}</td>
+      <td>${new Date(u.createdAt).toLocaleString()}</td>
+      <td>
+        <button onclick="resetarSenha('${u._id}')">🔄 Resetar</button>
+        <button onclick="excluirUsuario('${u._id}')">🗑️ Excluir</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+});
+
+function resetarSenha(id) {
+  if (confirm("Deseja resetar a senha deste usuário para '123456'?")) {
+    fetch(`http://localhost:3000/api/usuarios/resetar/${id}`, {
+      method: "PUT",
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(() => {
+      alert("Senha resetada com sucesso.");
+    });
+  }
+}
+
+function excluirUsuario(id) {
+  if (confirm("Tem certeza que deseja excluir este usuário?")) {
+    fetch(`http://localhost:3000/api/usuarios/${id}`, {
+      method: "DELETE",
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(() => {
+      alert("Usuário excluído.");
+      location.reload();
+    });
+  }
+}
+
+fetch("http://localhost:5000/api/rondas", {
+  headers: { "Authorization": "Bearer " + token }
+})
+.then(res => res.json())
+.then(rondas => {
+  const tbody = document.querySelector("#tabelaRondas tbody");
+  rondas.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.usuario}</td><td>${r.posto}</td><td>${r.dataHora}</td>`;
+    tbody.appendChild(tr);
+  });
+});
 
 
 const API_URL = "http://localhost:5000/api/users";
