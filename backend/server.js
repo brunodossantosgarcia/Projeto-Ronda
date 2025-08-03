@@ -1,44 +1,22 @@
 const express = require("express");
-const router = express.Router();
-const Ronda = require("../models/Ronda");
-const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const dotenv = require("dotenv");
+dotenv.config();
 
-// Middleware de autenticação
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ msg: "Token ausente" });
+const userRoutes = require("./routes/users");
+const rondaRoutes = require("./routes/rondas");
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ msg: "Token inválido" });
-    req.usuario = decoded.identidade;
-    next();
-  });
-}
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-// ✅ Salvar leitura de QR Code
-router.post("/", autenticar, async (req, res) => {
-  try {
-    const { posto, dataHora } = req.body;
-    const nova = new Ronda({ usuario: req.usuario, posto, dataHora });
-    await nova.save();
-    res.status(201).json({ msg: "Ronda salva" });
-  } catch {
-    res.status(500).json({ msg: "Erro ao salvar ronda" });
-  }
-});
+app.use("/api/users", userRoutes);
+app.use("/api/rondas", rondaRoutes);
 
-// ✅ Listar rondas (apenas admin)
-router.get("/", autenticar, async (req, res) => {
-  if (req.usuario !== "admin") return res.status(403).json({ msg: "Acesso negado" });
-  const rondas = await Ronda.find().sort({ createdAt: -1 });
-  res.json(rondas);
-});
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+.then(() => console.log("✅ MongoDB conectado"))
+.catch(err => console.error("❌ Erro MongoDB:", err));
 
-// ✅ Exportar rondas (para Excel)
-router.get("/exportar", autenticar, async (req, res) => {
-  if (req.usuario !== "admin") return res.status(403).json({ msg: "Acesso negado" });
-  const rondas = await Ronda.find().sort({ createdAt: -1 });
-  res.json(rondas);
-});
-
-module.exports = router;
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta ${PORT}`));
