@@ -99,6 +99,7 @@ function preencherFormulario() {
     { key: "ARMARIA_1", el: "armaria1info" }, { key: "ARMARIA_2", el: "armaria2info" }
   ];
   let inicio = null, fim = null;
+
   postos.forEach(p => {
     const val = localStorage.getItem(p.key) || "Não registrado";
     document.getElementById(p.el).textContent = val;
@@ -107,10 +108,40 @@ function preencherFormulario() {
       if (!inicio) inicio = dt;
       fim = dt;
     }
+
+    if (valor) {
+      const partes = valor.split(" - ")[1]; // pega só a data/hora
+      const dt = new Date(partes);
+      if (!inicio) inicio = dt;
+      fim = dt;
+    }
   });
+
+  // ✅ Cálculo do tempo total
+  if (inicio && fim) {
+    const diff = fim - inicio;
+    const minutos = Math.floor(diff / 60000);
+    const horas = Math.floor(minutos / 60);
+    const dias = Math.floor(horas / 24);
+    const tempo = `${dias}d ${horas % 24}h ${minutos % 60}min`;
+    document.getElementById("tempoTotal").textContent = tempo;
+  } else {
+    document.getElementById("tempoTotal").textContent = "---";
+  }
+}
+
+    function mostrarTela(id) {
+  document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+
+  // ✅ Se a tela for a 8, preenche automaticamente os dados
+  if (id === 'tela8') {
+    preencherFormulario();
+  }
+}
+
   document.getElementById("tempoTotal").textContent =
     inicio && fim ? `${Math.floor((fim - inicio)/60000)} minutos` : "---";
-}
 
 // ✅ Exportar Excel local
 function gerarExcel() {
