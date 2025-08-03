@@ -19,7 +19,12 @@ function autenticar(req, res, next) {
 router.post("/", autenticar, async (req, res) => {
   try {
     const { posto, dataHora } = req.body;
-    const nova = new Ronda({ usuario: req.usuario, posto, dataHora });
+    const User = require("../models/User");
+    const usuarioInfo = await User.findOne({ identidade: req.usuario });
+    const funcaoUsuario = usuarioInfo ? usuarioInfo.funcao : "Desconhecido";
+
+const nova = new Ronda({ usuario: funcaoUsuario, posto, dataHora });
+
     await nova.save();
     res.status(201).json({ msg: "Ronda salva" });
   } catch {

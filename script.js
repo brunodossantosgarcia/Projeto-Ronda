@@ -10,16 +10,29 @@ function mostrarTela(id) {
 async function cadastrar() {
   const identidade = document.getElementById("cadIdentidade").value;
   const senha = document.getElementById("cadSenha").value;
+  const funcao = document.getElementById("cadFuncao").value;
+
+  if (!funcao) {
+    alert("Selecione sua função antes de cadastrar!");
+    return;
+  }
+
+  if (res.ok) {
+  localStorage.setItem("funcao", funcao);
+}
+
 
   const res = await fetch(`${API_URL}/users/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha })
+    body: JSON.stringify({ identidade, senha, funcao })
   });
+
   const data = await res.json();
   alert(data.msg || "Cadastro realizado");
   if (res.ok) mostrarTela("tela1");
 }
+
 
 // ✅ Login
 async function login() {
@@ -29,13 +42,13 @@ async function login() {
   const res = await fetch(`${API_URL}/users/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha })
+    body: JSON.stringify({ identidade, senha,})
   });
   const data = await res.json();
   if (res.ok) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("usuario", identidade);
-    mostrarTela("tela3");
+    mostrarTela("tela4");
   } else {
     alert(data.msg);
   }
@@ -57,14 +70,15 @@ function iniciarLeitura(postoEsperado) {
       }
 
       const agora = new Date().toLocaleString("pt-BR");
-      const usuarioAtual = localStorage.getItem("usuario") || "Desconhecido";
+      const funcaoUsuario = localStorage.getItem("funcao") || localStorage.getItem("usuario") || "Desconhecido";
+
 
       // ✅ Salva horário local
       localStorage.setItem(postoEsperado, `${qrCodeMessage} - ${agora}`);
 
       // ✅ Salva no histórico local
       let rondas = JSON.parse(localStorage.getItem("rondas")) || [];
-      rondas.push({ usuario: usuarioAtual, posto: qrCodeMessage, dataHora: agora });
+      rondas.push({ usuario: funcaoUsuario, posto: qrCodeMessage, dataHora: agora });
       localStorage.setItem("rondas", JSON.stringify(rondas));
 
       // ✅ Envia para backend

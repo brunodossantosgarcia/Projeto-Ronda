@@ -32,7 +32,8 @@ router.post("/login", async (req, res) => {
     if (!match) return res.status(400).json({ msg: "Senha incorreta" });
 
     const token = jwt.sign({ identidade: user.identidade }, process.env.JWT_SECRET, { expiresIn: "2h" });
-    res.json({ token, identidade: user.identidade });
+    res.json({ token, identidade: user.identidade, funcao: user.funcao });
+
   } catch (err) {
     res.status(500).json({ msg: "Erro no login" });
   }

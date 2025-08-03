@@ -27,22 +27,24 @@
     </div>
 
     <!-- Tela 2 - Cadastro -->
-    <div id="tela2" class="hidden">
-      <h2>Faça seu cadastro</h2>
-      <input type="text" id="cadIdentidade" placeholder="Identidade Militar">
-      <input type="password" id="cadSenha" placeholder="Senha">
-      <button onclick="cadastrar()">Cadastrar</button>
-      <button onclick="mostrarTela('tela1')">Voltar</button>
-    </div>
-
-    <!-- Tela 3 - Função -->
-    <div id="tela3" class="hidden">
-      <h2>Selecione sua função</h2>
-      <button onclick="mostrarTela('tela4')">Of de Dia</button>
-      <button onclick="mostrarTela('tela4')">Adj Of Dia</button>
-      <button onclick="mostrarTela('tela4')">Sgt Dia ALA</button>
-      <button onclick="mostrarTela('tela4')">Sgt Dia BC</button>
-    </div>
+  <!-- Tela 2 - Cadastro -->
+<div id="tela2" class="hidden">
+  <h2>Faça seu cadastro</h2>
+  <input type="text" id="cadIdentidade" placeholder="Identidade Militar">
+  <input type="password" id="cadSenha" placeholder="Senha">
+  
+  <!-- ✅ Novo campo para escolher a função -->
+  <select id="cadFuncao">
+    <option value="">Selecione sua função</option>
+    <option value="Of de Dia">Of de Dia</option>
+    <option value="Adj Of Dia">Adj Of Dia</option>
+    <option value="Sgt Dia ALA">Sgt Dia ALA</option>
+    <option value="Sgt Dia BC">Sgt Dia BC</option>
+  </select>
+  
+  <button onclick="cadastrar()">Cadastrar</button>
+  <button onclick="mostrarTela('tela1')">Voltar</button>
+</div>
 
     <!-- Tela 4 - Postos -->
     <div id="tela4" class="hidden">
