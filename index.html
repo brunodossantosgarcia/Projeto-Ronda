@@ -30,18 +30,18 @@
   <!-- Tela 2 - Cadastro -->
 <div id="tela2" class="hidden">
   <h2>Faça seu cadastro</h2>
-  <input type="text" id="cadIdentidade" placeholder="Identidade Militar">
-  <input type="password" id="cadSenha" placeholder="Senha">
-  
-  <!-- ✅ Novo campo para escolher a função -->
-  <select id="cadFuncao">
-    <option value="">Selecione sua função</option>
-    <option value="Of de Dia">Of de Dia</option>
-    <option value="Adj Of Dia">Adj Of Dia</option>
-    <option value="Sgt Dia ALA">Sgt Dia ALA</option>
-    <option value="Sgt Dia BC">Sgt Dia BC</option>
-  </select>
-  
+ <input type="text" id="cadIdentidade" placeholder="Identidade Militar">
+<input type="password" id="cadSenha" placeholder="Senha">
+<input type="password" id="cadConfirmaSenha" placeholder="Confirme a Senha">
+
+<select id="cadFuncao">
+  <option value="">Selecione sua função</option>
+  <option value="Of de Dia">Of de Dia</option>
+  <option value="Adj Of Dia">Adj Of Dia</option>
+  <option value="Sgt Dia ALA">Sgt Dia ALA</option>
+  <option value="Sgt Dia BC">Sgt Dia BC</option>
+</select>
+
   <button onclick="cadastrar()">Cadastrar</button>
   <button onclick="mostrarTela('tela1')">Voltar</button>
 </div>

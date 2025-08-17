@@ -7,31 +7,23 @@ function mostrarTela(id) {
 }
 
 // ✅ Cadastro
-async function cadastrar() {
-  const identidade = document.getElementById("cadIdentidade").value;
-  const senha = document.getElementById("cadSenha").value;
-  const funcao = document.getElementById("cadFuncao").value;
+router.post("/register", async (req, res) => {
+  try {
+    const { identidade, senha, funcao } = req.body;
 
-  if (!funcao) {
-    alert("Selecione sua função antes de cadastrar!");
-    return;
+    if (!funcao) {
+      return res.status(400).json({ error: "Função é obrigatória" });
+    }
+
+    const novo = new User({ identidade, senha, funcao });
+    await novo.save();
+    res.json({ message: "Usuário cadastrado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao cadastrar:", err);
+    res.status(500).json({ error: "Erro ao cadastrar usuário" });
   }
+});
 
-  if (res.ok) {
-  localStorage.setItem("funcao", funcao);
-}
-
-
-  const res = await fetch(`${API_URL}/users/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha, funcao })
-  });
-
-  const data = await res.json();
-  alert(data.msg || "Cadastro realizado");
-  if (res.ok) mostrarTela("tela1");
-}
 
 
 // ✅ Login

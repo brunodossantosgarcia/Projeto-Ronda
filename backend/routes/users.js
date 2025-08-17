@@ -6,20 +6,22 @@ const User = require("../models/User");
 
 // Cadastro de usuário
 router.post("/register", async (req, res) => {
-  const { identidade, senha } = req.body;
   try {
-    const existente = await User.findOne({ identidade });
-    if (existente) return res.status(400).json({ msg: "Usuário já existe" });
+    const { identidade, senha, funcao } = req.body;
 
-    const hashedSenha = await bcrypt.hash(senha, 10);
-    const novoUser = new User({ identidade, senha: hashedSenha });
-    await novoUser.save();
+    if (!funcao) {
+      return res.status(400).json({ error: "Função é obrigatória" });
+    }
 
-    res.status(201).json({ msg: "Cadastro realizado" });
+    const novo = new User({ identidade, senha, funcao });
+    await novo.save();
+    res.json({ message: "Usuário cadastrado com sucesso" });
   } catch (err) {
-    res.status(500).json({ msg: "Erro ao cadastrar" });
+    console.error("Erro ao cadastrar:", err);
+    res.status(500).json({ error: "Erro ao cadastrar usuário" });
   }
 });
+
 
 // Login de usuário
 router.post("/login", async (req, res) => {
