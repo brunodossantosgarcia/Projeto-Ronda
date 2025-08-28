@@ -7,22 +7,44 @@ function mostrarTela(id) {
 }
 
 // ✅ Cadastro
-router.post("/register", async (req, res) => {
-  try {
-    const { identidade, senha, funcao } = req.body;
+async function cadastrar() {
+  const identidade = document.getElementById("cadIdentidade").value;
+  const senha = document.getElementById("cadSenha").value;
+  const confirma = document.getElementById("cadConfirmaSenha").value;
+  const funcao = document.getElementById("cadFuncao").value;
 
-    if (!funcao) {
-      return res.status(400).json({ error: "Função é obrigatória" });
-    }
-
-    const novo = new User({ identidade, senha, funcao });
-    await novo.save();
-    res.json({ message: "Usuário cadastrado com sucesso" });
-  } catch (err) {
-    console.error("Erro ao cadastrar:", err);
-    res.status(500).json({ error: "Erro ao cadastrar usuário" });
+  if (!identidade || !senha || !confirma || !funcao) {
+    alert("Preencha todos os campos!");
+    return;
   }
-});
+
+  if (senha !== confirma) {
+    alert("As senhas não coincidem!");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identidade, senha, funcao })
+    });
+
+    const data = await res.json();
+    console.log("Resposta do backend:", data);
+
+    if (res.ok) {
+      alert("Cadastro realizado com sucesso!");
+      localStorage.setItem("funcao", funcao);
+      mostrarTela("tela1");
+    } else {
+      alert("Erro: " + (data.error || "Não foi possível cadastrar"));
+    }
+  } catch (err) {
+    console.error("Erro no cadastro:", err);
+    alert("Erro ao conectar com servidor");
+  }
+}
 
 
 
@@ -31,20 +53,33 @@ async function login() {
   const identidade = document.getElementById("login").value;
   const senha = document.getElementById("senha").value;
 
-  const res = await fetch(`${API_URL}/users/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ identidade, senha,})
-  });
-  const data = await res.json();
-  if (res.ok) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("usuario", identidade);
-    mostrarTela("tela4");
-  } else {
-    alert(data.msg);
+  if (!identidade || !senha) {
+    alert("Preencha identidade e senha");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:3000/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ identidade, senha })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Login realizado com sucesso!");
+      localStorage.setItem("usuarioLogado", JSON.stringify(data));
+      mostrarTela("tela4"); // vai direto para postos
+    } else {
+      alert(data.error || "Erro no login");
+    }
+  } catch (err) {
+    console.error("Erro na requisição:", err);
+    alert("Falha ao conectar com o servidor");
   }
 }
+
 
 // ✅ Inicia leitura QR para um posto específico
 function iniciarLeitura(postoEsperado) {

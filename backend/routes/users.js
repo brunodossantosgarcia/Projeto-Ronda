@@ -9,8 +9,13 @@ router.post("/register", async (req, res) => {
   try {
     const { identidade, senha, funcao } = req.body;
 
-    if (!funcao) {
-      return res.status(400).json({ error: "Função é obrigatória" });
+    if (!identidade || !senha || !funcao) {
+      return res.status(400).json({ error: "Todos os campos são obrigatórios" });
+    }
+
+    const existente = await User.findOne({ identidade });
+    if (existente) {
+      return res.status(400).json({ error: "Identidade já cadastrada" });
     }
 
     const novo = new User({ identidade, senha, funcao });
@@ -23,22 +28,31 @@ router.post("/register", async (req, res) => {
 });
 
 
+
 // Login de usuário
 router.post("/login", async (req, res) => {
-  const { identidade, senha } = req.body;
   try {
+    const { identidade, senha } = req.body;
+
     const user = await User.findOne({ identidade });
-    if (!user) return res.status(400).json({ msg: "Usuário não encontrado" });
+    if (!user) {
+      return res.status(400).json({ error: "Usuário não encontrado" });
+    }
 
-    const match = await bcrypt.compare(senha, user.senha);
-    if (!match) return res.status(400).json({ msg: "Senha incorreta" });
+    // comparação simples, sem hash
+    if (user.senha !== senha) {
+      return res.status(400).json({ error: "Senha incorreta" });
+    }
 
-    const token = jwt.sign({ identidade: user.identidade }, process.env.JWT_SECRET, { expiresIn: "2h" });
-    res.json({ token, identidade: user.identidade, funcao: user.funcao });
-
+    res.json({
+      message: "Login realizado com sucesso",
+      funcao: user.funcao
+    });
   } catch (err) {
-    res.status(500).json({ msg: "Erro no login" });
+    console.error("Erro no login:", err);
+    res.status(500).json({ error: "Erro ao realizar login" });
   }
 });
+
 
 module.exports = router;
