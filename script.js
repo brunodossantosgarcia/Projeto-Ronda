@@ -133,50 +133,60 @@ function stopScan() {
 // ✅ Preencher formulário com dados locais
 function preencherFormulario() {
   const postos = [
-    { key: "POSTO_P1", el: "p1info" }, { key: "POSTO_P2", el: "p2info" },
-    { key: "POSTO_P3", el: "p3info" }, { key: "POSTO_P4", el: "p4info" },
-    { key: "POSTO_P5", el: "p5info" }, { key: "PAIOL_1", el: "paiol1info" },
-    { key: "PAIOL_2", el: "paiol2info" }, { key: "ARMARIA_BC", el: "armariabcinfo" },
-    { key: "ARMARIA_1", el: "armaria1info" }, { key: "ARMARIA_2", el: "armaria2info" }
+    { key: "POSTO_P1", el: "p1info" },
+    { key: "POSTO_P2", el: "p2info" },
+    { key: "POSTO_P3", el: "p3info" },
+    { key: "POSTO_P4", el: "p4info" },
+    { key: "POSTO_P5", el: "p5info" },
+    { key: "PAIOL_1", el: "paiol1info" },
+    { key: "PAIOL_2", el: "paiol2info" },
+    { key: "ARMARIA_BC", el: "armariabcinfo" },
+    { key: "ARMARIA_1", el: "armaria1info" },
+    { key: "ARMARIA_2", el: "armaria2info" }
   ];
-  let inicio = null, fim = null;
+
+  let inicio = null;
+  let fim = null;
 
   postos.forEach(p => {
-    const val = localStorage.getItem(p.key) || "Não registrado";
-    document.getElementById(p.el).textContent = val;
-    if (val !== "Não registrado") {
-      const dt = new Date(val.split(" - ")[1]);
-      if (!inicio) inicio = dt;
-      fim = dt;
-    }
+    const valor = localStorage.getItem(p.key);
+    document.getElementById(p.el).textContent = valor ? valor : "Não registrado";
 
     if (valor) {
-      const partes = valor.split(" - ")[1]; // pega só a data/hora
+      const partes = valor.split(" - ")[1]; // pega só a data/hora que foi salva
       const dt = new Date(partes);
-      if (!inicio) inicio = dt;
-      fim = dt;
+
+      if (!isNaN(dt)) {
+        if (!inicio) inicio = dt;
+        fim = dt;
+      }
     }
   });
 
   // ✅ Cálculo do tempo total
   if (inicio && fim) {
-    const diff = fim - inicio;
-    const minutos = Math.floor(diff / 60000);
+    const diffMs = fim - inicio;
+
+    const segundos = Math.floor(diffMs / 1000);
+    const minutos = Math.floor(segundos / 60);
     const horas = Math.floor(minutos / 60);
     const dias = Math.floor(horas / 24);
-    const tempo = `${dias}d ${horas % 24}h ${minutos % 60}min`;
-    document.getElementById("tempoTotal").textContent = tempo;
+
+    const tempoTotal = `${dias}d ${horas % 24}h ${minutos % 60}min ${segundos % 60}s`;
+    document.getElementById("tempoTotal").textContent = tempoTotal;
   } else {
     document.getElementById("tempoTotal").textContent = "---";
   }
 }
 
     function mostrarTela(id) {
-  document.querySelectorAll('.container > div:not(.logo)').forEach(div => div.classList.add('hidden'));
+  document.querySelectorAll('.container > div:not(.logo)')
+    .forEach(div => div.classList.add('hidden'));
+  
   document.getElementById(id).classList.remove('hidden');
 
-  // ✅ Se a tela for a 8, preenche automaticamente os dados
-  if (id === 'tela8') {
+  // ✅ sempre que entrar na tela8, preenche os dados
+  if (id === "tela8") {
     preencherFormulario();
   }
 }
